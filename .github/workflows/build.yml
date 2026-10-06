@@ -2,34 +2,38 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
-  build:
+  export-android:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Extract Project
-        run: |
-          unzip -o Seir_Takhamol_V39_Master_Expansion_FIXED.zip -d project
-
-      - name: Setup Java
+      - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Godot Export
-        uses: firebelley/godot-export@v6.0.0
+      - name: Create Signing Keystore
+        run: |
+          keytool -genkeypair -v -keystore project/keystore.keystore -alias seirtakhamol -keyalg RSA -keysize 2048 -validity 10000 -storepass GAPGPTMASKTOKENkmx0mtyju8mX2X -keypass GAPGPTMASKTOKENkmx0mtyju8mX3X -dname "CN=Seir Takhamol, OU=Game, O=Parsa, L=Tehran, S=Tehran, C=IR"
+
+      - name: Godot Android Export
+        uses: firebelley/godot-export@v5.2.1
         with:
-          godot_executable_download_url: https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip
-          godot_export_templates_download_url: https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_export_templates.tpz
-          relative_project_path: project
-          cache: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          godot_executable_download_url: https://github.com/godotengine/godot/releases/download/4.2.2-stable/Godot_v4.2.2-stable_linux.x86_64.zip
+          godot_export_templates_download_url: https://github.com/godotengine/godot/releases/download/4.2.2-stable/Godot_v4.2.2-stable_export_templates.tpz
+          relative_project_path: ./project
+          cache: false
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SeirTakhamol-Android-APK
+          path: project/build/SeirTakhamol.apk
           
