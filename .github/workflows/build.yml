@@ -1,0 +1,40 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Unzip project
+        run: |
+          unzip -o Seir_Takhamol_V39_Master_Expansion_FIXED.zip -d project/
+          
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Godot Android Export
+        uses: dulvui/godot-android-export@v4.0.0
+        with:
+          godot-version: '4.3'
+          project-path: 'project'
+          export-debug: 'true'
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Seir-Takhamol-APK
+          path: '**/*.apk'
+          
