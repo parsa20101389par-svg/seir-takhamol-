@@ -2,39 +2,34 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Unzip project
+      - name: Extract Project
         run: |
-          unzip -o Seir_Takhamol_V39_Master_Expansion_FIXED.zip -d project/
-          
+          unzip -o Seir_Takhamol_V39_Master_Expansion_FIXED.zip -d project
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Godot Android Export
-        uses: dulvui/godot-android-export@v4.0.0
+      - name: Setup Godot Export
+        uses: firebelley/godot-export@v6.0.0
         with:
-          godot-version: '4.3'
-          project-path: 'project'
-          export-debug: 'true'
-
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Seir-Takhamol-APK
-          path: '**/*.apk'
+          godot_executable_download_url: https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip
+          godot_export_templates_download_url: https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_export_templates.tpz
+          relative_project_path: project
+          cache: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
