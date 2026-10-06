@@ -1,14 +1,13 @@
-name: Build Android APK
+name: export-android
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
-  export-android:
+  export:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
@@ -16,32 +15,36 @@ jobs:
       - name: Setup Java JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '17'
 
       - name: Create Signing Keystore
         run: |
-          keytool -genkeypair -v -keystore keystore.keystore -alias seirtakhamol -keyalg RSA -keysize 2048 -validity 10000 -storepass GAPGPTMASKTOKEN6j6cffhu6tjX2X -keypass GAPGPTMASKTOKEN6j6cffhu6tjX3X -dname "CN=Seir Takhamol, OU=Game, O=Parsa, L=Tehran, S=Tehran, C=IR"
-          ls -la
+          keytool -genkeypair -v \
+            -keystore $GITHUB_WORKSPACE/keystore.keystore \
+            -alias seirtakhamol \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass seirtakhamol123 -keypass seirtakhamol123 \
+            -dname "CN=SeirTakhamol, OU=Game, O=Parsa, L=Tehran, S=Tehran, C=IR"
 
       - name: Godot Android Export
         uses: firebelley/godot-export@v5.2.1
         with:
           godot_executable_download_url: https://github.com/godotengine/godot/releases/download/4.2.2-stable/Godot_v4.2.2-stable_linux.x86_64.zip
-          godot_export_templates_download_url: https://github.com/godotengine/godot/releases/download/4.2.2-stable/Godot_v4.2.2-stable_export_templates.tpz
-          relative_project_path: ./project
-          cache: false
-
-      - name: Move APK to project folder
-        run: |
-          mkdir -p project/build
-          find . -name "*.apk" -exec cp {} project/build/SeirTakhamol.apk \; || true
-          ls -la project/build || true
+          godot_export_debug_download_url: https://github.com/godotengine/godot/releases/download/4.2.2-stable/Godot_v4.2.2-stable_export_templates.tpz
+          relative_project_path: project
+        env:
+          GODOT_ANDROID_KEYSTORE_DEBUG_PATH: /home/runner/work/seir-takhamol-/seir-takhamol-/keystore.keystore
+          GODOT_ANDROID_KEYSTORE_DEBUG_USER: seirtakhamol
+          GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD: seirtakhamol123
+          GODOT_ANDROID_KEYSTORE_RELEASE_PATH: /home/runner/work/seir-takhamol-/seir-takhamol-/keystore.keystore
+          GODOT_ANDROID_KEYSTORE_RELEASE_USER: seirtakhamol
+          GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD: seirtakhamol123
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SeirTakhamol-Android-APK
-          path: project/build/*.apk
-          if-no-files-found: warn
-          
+          name: SeirTakhamol-APK
+          path: |
+            **/*.apk
+            
