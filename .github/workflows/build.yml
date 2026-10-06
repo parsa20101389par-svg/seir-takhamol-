@@ -21,7 +21,8 @@ jobs:
 
       - name: Create Signing Keystore
         run: |
-          keytool -genkeypair -v -keystore project/keystore.keystore -alias seirtakhamol -keyalg RSA -keysize 2048 -validity 10000 -storepass GAPGPTMASKTOKENkmx0mtyju8mX2X -keypass GAPGPTMASKTOKENkmx0mtyju8mX3X -dname "CN=Seir Takhamol, OU=Game, O=Parsa, L=Tehran, S=Tehran, C=IR"
+          keytool -genkeypair -v -keystore keystore.keystore -alias seirtakhamol -keyalg RSA -keysize 2048 -validity 10000 -storepass GAPGPTMASKTOKEN6j6cffhu6tjX2X -keypass GAPGPTMASKTOKEN6j6cffhu6tjX3X -dname "CN=Seir Takhamol, OU=Game, O=Parsa, L=Tehran, S=Tehran, C=IR"
+          ls -la
 
       - name: Godot Android Export
         uses: firebelley/godot-export@v5.2.1
@@ -31,9 +32,16 @@ jobs:
           relative_project_path: ./project
           cache: false
 
+      - name: Move APK to project folder
+        run: |
+          mkdir -p project/build
+          find . -name "*.apk" -exec cp {} project/build/SeirTakhamol.apk \; || true
+          ls -la project/build || true
+
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: SeirTakhamol-Android-APK
-          path: project/build/SeirTakhamol.apk
+          path: project/build/*.apk
+          if-no-files-found: warn
           
