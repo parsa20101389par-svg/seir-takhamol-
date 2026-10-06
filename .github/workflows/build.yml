@@ -24,22 +24,22 @@ jobs:
             -keystore $GITHUB_WORKSPACE/keystore.keystore \
             -alias seirtakhamol \
             -keyalg RSA -keysize 2048 -validity 10000 \
-            -storepass seirtakhamol123 -keypass seirtakhamol123 \
+            -storepass GAPGPTMASKTOKEN3b8yyqu9aouX0X -keypass GAPGPTMASKTOKEN3b8yyqu9aouX1X \
             -dname "CN=SeirTakhamol, OU=Game, O=Parsa, L=Tehran, S=Tehran, C=IR"
 
       - name: Godot Android Export
         uses: firebelley/godot-export@v5.2.1
         with:
           godot_executable_download_url: https://github.com/godotengine/godot/releases/download/4.2.2-stable/Godot_v4.2.2-stable_linux.x86_64.zip
-          godot_export_debug_download_url: https://github.com/godotengine/godot/releases/download/4.2.2-stable/Godot_v4.2.2-stable_export_templates.tpz
+          godot_export_templates_download_url: https://github.com/godotengine/godot/releases/download/4.2.2-stable/Godot_v4.2.2-stable_export_templates.tpz
           relative_project_path: project
         env:
           GODOT_ANDROID_KEYSTORE_DEBUG_PATH: /home/runner/work/seir-takhamol-/seir-takhamol-/keystore.keystore
           GODOT_ANDROID_KEYSTORE_DEBUG_USER: seirtakhamol
-          GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD: seirtakhamol123
+          GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD: GAPGPTMASKTOKEN3b8yyqu9aouX2X
           GODOT_ANDROID_KEYSTORE_RELEASE_PATH: /home/runner/work/seir-takhamol-/seir-takhamol-/keystore.keystore
           GODOT_ANDROID_KEYSTORE_RELEASE_USER: seirtakhamol
-          GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD: seirtakhamol123
+          GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD: GAPGPTMASKTOKEN3b8yyqu9aouX3X
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
